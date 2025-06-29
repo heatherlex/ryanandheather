@@ -17,6 +17,7 @@
       font-family: Arial, sans-serif;
       background-color: black;
       overflow: hidden;
+      color: white;
     }
     .video-container {
       position: relative;
@@ -32,10 +33,11 @@
     }
     video {
       max-width: 90vw;
-      max-height: 60vh;
+      height: 80vh;
       object-fit: contain;
       display: none;
       border-radius: 8px;
+      background: black;
     }
     .scroll-message {
       position: absolute;
@@ -55,10 +57,55 @@
       align-items: center;
       justify-content: center;
       margin-top: 20px;
-      width: 100%;
+      width: 90%;
+      max-width: 600px;
       z-index: 3;
-      color: white;
       font-family: 'Cormorant Garamond', serif;
+      padding: 20px;
+      background: rgba(255 255 255 / 0.05);
+      border-radius: 12px;
+    }
+    .form-description {
+      font-size: 18px;
+      margin-bottom: 20px;
+      text-align: center;
+      line-height: 1.4;
+      color: #eee;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 25px;
+      border-radius: 6px;
+      border: 1.5px solid white;
+      background: transparent;
+      color: white;
+      font-size: 18px;
+      font-family: 'Cormorant Garamond', serif;
+    }
+    input::placeholder {
+      color: #ccc;
+    }
+    button[type='submit'] {
+      padding: 14px 28px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      border: 2px solid white;
+      background: transparent;
+      color: white;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.3s, color 0.3s;
+      user-select: none;
+    }
+    button[type='submit']:hover {
+      background-color: white;
+      color: black;
     }
     .iframe-container {
       height: 100vh;
@@ -127,37 +174,6 @@
         opacity: 1;
       }
     }
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 20px;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 25px;
-      border-radius: 6px;
-      border: 1.5px solid white;
-      background: transparent;
-      color: white;
-      font-size: 18px;
-      font-family: 'Cormorant Garamond', serif;
-    }
-    button[type='submit'] {
-      padding: 14px 28px;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 20px;
-      border: 2px solid white;
-      background: transparent;
-      color: white;
-      cursor: pointer;
-      border-radius: 8px;
-      transition: background-color 0.3s, color 0.3s;
-    }
-    button[type='submit']:hover {
-      background-color: white;
-      color: black;
-    }
   </style>
 </head>
 <body>
@@ -166,22 +182,24 @@
       <div class="typewriter-text">Welcome </div>
       <div class="typewriter-subtext">tap anywhere to play</div>
     </div>
-    <video playsinline muted id="introVideo">
+    <video playsinline muted id="introVideo" preload="auto" playsinline>
       <source src="wedding-intro.mp4" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
     <div class="scroll-message" id="scrollMessage">tap to skip video</div>
 
-    <!-- Custom Styled Form -->
-    <div class="form-container" id="formContainer">
+    <div class="form-container" id="formContainer" role="form" aria-label="Wedding RSVP form">
+      <p class="form-description">
+        Please fill out this quick form so we know you’re coming! We can’t wait to celebrate together. 🥂
+      </p>
       <form id="customForm">
         <label for="name">Name</label>
-        <input type="text" id="name" name="entry.2005620554" required />
+        <input type="text" id="name" name="entry.2005620554" placeholder="Your full name" required autocomplete="name" />
 
         <label for="email">Email</label>
-        <input type="email" id="email" name="entry.1045781291" required />
+        <input type="email" id="email" name="entry.1045781291" placeholder="your.email@example.com" required autocomplete="email" />
 
-        <button type="submit">Submit</button>
+        <button type="submit" aria-label="Submit RSVP form">Submit</button>
       </form>
     </div>
   </div>
@@ -208,7 +226,6 @@
         video.muted = true; // mute first for autoplay on mobile
         video.load();
         video.play().then(() => {
-          // Unmute after playback starts
           video.muted = false;
           overlayMessage.style.display = 'none';
         }).catch(err => {
@@ -228,7 +245,7 @@
       }
     }
 
-    // On first tap or touchstart, start video
+    // Start or skip video on tap/click/touchstart
     function onStart(e) {
       e.preventDefault();
       if (!hasStarted) {
@@ -241,7 +258,7 @@
     document.addEventListener('touchstart', onStart, { passive: false });
     document.addEventListener('click', onStart, { passive: false });
 
-    // Hide scroll message when video ends and show form
+    // When video ends show form and hide scroll message
     video.addEventListener('ended', () => {
       video.style.display = 'none';
       videoContainer.style.backgroundColor = 'black';
@@ -249,7 +266,7 @@
       scrollMessage.style.display = 'none';
     });
 
-    // Submit form and redirect automatically
+    // Submit form data to Google Forms and redirect on success
     customForm.addEventListener('submit', e => {
       e.preventDefault();
 
@@ -261,7 +278,6 @@
         mode: 'no-cors',
         body: formData
       }).finally(() => {
-        // Redirect after submission attempt
         window.location.href = 'https://www.withjoy.com/ryanheather';
       });
     });
