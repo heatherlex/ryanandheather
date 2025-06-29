@@ -147,6 +147,7 @@
   <div class="iframe-container" id="iframeContainer">
     <iframe class="website" loading="lazy" src="https://www.withjoy.com/ryanheather"></iframe>
   </div>
+
   <script>
     const video = document.getElementById('introVideo');
     const iframeContainer = document.getElementById('iframeContainer');
@@ -159,6 +160,7 @@
 
     let hasStarted = false;
     let hasPlayed = false;
+    let canSkip = false;
 
     function startVideo() {
       if (!hasStarted) {
@@ -167,8 +169,11 @@
         overlayMessage.style.display = 'none';
         topSkipMessage.style.display = 'block';
 
-        video.muted = true;
-        video.play().catch(err => {
+        video.muted = true; // Required to play initially
+        video.play().then(() => {
+          // Once user initiates playback, we can unmute
+          video.muted = false;
+        }).catch(err => {
           console.error('Playback failed:', err);
           overlayMessage.innerText = 'Tap to try again';
           hasStarted = false;
@@ -190,16 +195,17 @@
     function handleTap(e) {
       if (!hasStarted) {
         startVideo();
-      } else if (hasStarted && !hasPlayed) {
-        // Prevent instant skip after play
-        return;
-      } else {
+      } else if (canSkip) {
         skipVideo();
       }
     }
 
     videoContainer.addEventListener('pointerdown', handleTap);
     videoContainer.addEventListener('click', handleTap);
+
+    video.addEventListener('playing', () => {
+      canSkip = true;
+    });
 
     video.addEventListener('ended', () => {
       hasPlayed = true;
