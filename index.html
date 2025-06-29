@@ -30,10 +30,8 @@
       padding: 20px 0;
     }
     video {
-      max-width: 100%;
-      max-height: 80vh;
-      width: auto;
-      height: auto;
+      max-width: 95vw;
+      max-height: 70vh;
       object-fit: contain;
       display: none;
       border-radius: 8px;
@@ -51,11 +49,12 @@
     }
     .enter-button {
       margin-top: 20px;
-      background-color: black;
+      background-color: transparent;
       color: white;
       border: 2px solid white;
-      padding: 15px 30px;
+      padding: 12px 24px;
       font-size: 18px;
+      font-family: 'Cormorant Garamond', serif;
       cursor: pointer;
       opacity: 0;
       transition: opacity 1s;
@@ -151,7 +150,9 @@
     <div class="scroll-message">scroll to skip video</div>
     <div class="form-container" id="formContainer">
       <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfDSXRR0wmxZJCbK9W5DwNa3nFnpoK6M3Z96q541rj3jBdGAA/viewform?embedded=true">Loading…</iframe>
-      <button class="enter-button" id="enterButton">Enter Our Wedding Website</button>
+      <div style="margin-top: 20px; text-align: center;">
+        <button class="enter-button" id="enterButton">Enter Our Wedding Website</button>
+      </div>
     </div>
   </div>
 
