@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ryan & Heather's Wedding</title>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -23,12 +23,19 @@
       width: 100vw;
       overflow: hidden;
       z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
     }
     video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      max-width: 100vw;
+      max-height: 90vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
       display: none;
+      border-radius: 8px;
     }
     .scroll-message {
       position: absolute;
@@ -42,10 +49,7 @@
       z-index: 4;
     }
     .enter-button {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      margin-top: 20px;
       background-color: black;
       color: white;
       border: 2px solid white;
@@ -59,13 +63,29 @@
     .enter-button.show {
       opacity: 1;
     }
+    .form-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+      width: 100%;
+      z-index: 3;
+    }
+    .form-container iframe {
+      width: 90%;
+      height: 600px;
+      border: none;
+      border-radius: 8px;
+      max-width: 700px;
+    }
     .iframe-container {
       height: 100vh;
       width: 100%;
       display: none;
       z-index: 1;
     }
-    iframe {
+    iframe.website {
       border: none;
       width: 100%;
       height: 100%;
@@ -92,19 +112,21 @@
       border-right: .15em solid white;
       white-space: nowrap;
       overflow: hidden;
-      animation: typing 3s steps(30, end), blink-caret .75s step-end infinite;
+      width: 8ch;
+      animation: typing 2.3s steps(8, end), blink-caret .75s step-end infinite;
     }
     .typewriter-subtext {
       font-size: 18px;
-      font-family: Arial, sans-serif;
+      font-family: 'Cormorant Garamond', serif;
       margin-top: 15px;
       opacity: 0;
       animation: fadeIn 2s ease forwards;
-      animation-delay: 3s;
+      animation-delay: 2.3s;
+      text-transform: lowercase;
     }
     @keyframes typing {
       from { width: 0 }
-      to { width: 100% }
+      to { width: 8ch }
     }
     @keyframes blink-caret {
       from, to { border-color: transparent }
@@ -118,8 +140,8 @@
 <body>
   <div class="video-container" id="videoContainer">
     <div class="overlay-message" id="overlayMessage">
-      <div class="typewriter-text">Welcome</div>
-      <div class="typewriter-subtext">Tap anywhere to play</div>
+      <div class="typewriter-text">Welcome </div>
+      <div class="typewriter-subtext">tap anywhere to play</div>
     </div>
     <video playsinline id="introVideo">
       <source src="wedding-intro.mp4" type="video/mp4">
@@ -127,51 +149,53 @@
     </video>
     <div class="scroll-message">scroll to enter our wedding website</div>
     <button class="enter-button" id="enterButton">Enter Our Wedding Website</button>
+    <div class="form-container" id="formContainer">
+      <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfDSXRR0wmxZJCbK9W5DwNa3nFnpoK6M3Z96q541rj3jBdGAA/viewform?embedded=true">Loading…</iframe>
+    </div>
   </div>
 
   <div class="iframe-container" id="iframeContainer">
-    <iframe src="https://www.withjoy.com/ryanheather"></iframe>
+    <iframe class="website" src="https://www.withjoy.com/ryanheather"></iframe>
   </div>
 
-<script>
-  const video = document.getElementById('introVideo');
-  const enterButton = document.getElementById('enterButton');
-  const iframeContainer = document.getElementById('iframeContainer');
-  const videoContainer = document.getElementById('videoContainer');
-  const overlayMessage = document.getElementById('overlayMessage');
+  <script>
+    const video = document.getElementById('introVideo');
+    const enterButton = document.getElementById('enterButton');
+    const iframeContainer = document.getElementById('iframeContainer');
+    const videoContainer = document.getElementById('videoContainer');
+    const overlayMessage = document.getElementById('overlayMessage');
+    const formContainer = document.getElementById('formContainer');
 
-  let hasStarted = false;
+    let hasStarted = false;
 
-  document.addEventListener('click', () => {
-    if (!hasStarted) {
-      hasStarted = true;
+    document.addEventListener('click', () => {
+      if (!hasStarted) {
+        hasStarted = true;
+        video.style.display = 'block';
+        video.muted = true;
+        video.load();
+        video.play().then(() => {
+          video.muted = false;
+          overlayMessage.style.display = 'none';
+        }).catch(err => {
+          console.error('Playback error:', err);
+          overlayMessage.innerText = 'Click to try again';
+        });
+      }
+    });
 
-      // Reset and try to play muted first
-      video.style.display = 'block';
-      video.muted = true;
-      video.load();
-      video.play().then(() => {
-        // After playback starts, unmute
-        video.muted = false;
-        overlayMessage.style.display = 'none';
-      }).catch((err) => {
-        console.error('Video playback failed:', err);
-        overlayMessage.innerText = 'Click to try again';
-      });
-    }
-  });
+    video.addEventListener('ended', () => {
+      video.style.display = 'none';
+      videoContainer.style.backgroundColor = 'black';
+      enterButton.classList.add('show');
+      formContainer.style.display = 'flex';
+    });
 
-  video.addEventListener('ended', () => {
-    video.style.display = 'none';
-    videoContainer.style.backgroundColor = 'black';
-    enterButton.classList.add('show');
-  });
-
-  enterButton.addEventListener('click', () => {
-    videoContainer.style.display = 'none';
-    iframeContainer.style.display = 'block';
-    document.body.style.overflow = 'auto';
-  });
-</script>
+    enterButton.addEventListener('click', () => {
+      videoContainer.style.display = 'none';
+      iframeContainer.style.display = 'block';
+      document.body.style.overflow = 'auto';
+    });
+  </script>
 </body>
 </html>
