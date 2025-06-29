@@ -1,10 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ryan & Heather's Wedding</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -20,30 +20,26 @@
     .video-container {
       position: relative;
       height: 100vh;
-      width: 100%;
+      width: 100vw;
       overflow: hidden;
       z-index: 2;
     }
     video {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      min-width: 100%;
-      min-height: 100%;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
+      display: none;
     }
     .scroll-message {
       position: absolute;
-      bottom: 30px;
+      bottom: 20px;
       width: 100%;
       text-align: center;
       color: white;
-      font-size: 18px;
-      background-color: rgba(0, 0, 0, 0.5);
-      padding: 10px;
-      opacity: 0;
-      transition: opacity 1s;
+      font-size: 14px;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 8px;
+      z-index: 4;
     }
     .enter-button {
       position: absolute;
@@ -63,9 +59,6 @@
     .enter-button.show {
       opacity: 1;
     }
-    .scroll-message.show {
-      opacity: 1;
-    }
     .iframe-container {
       height: 100vh;
       width: 100%;
@@ -77,15 +70,62 @@
       width: 100%;
       height: 100%;
     }
+    .overlay-message {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      z-index: 5;
+      font-size: 32px;
+      font-family: 'Great Vibes', cursive;
+      padding: 20px;
+    }
+    .typewriter-text {
+      border-right: .15em solid white;
+      white-space: nowrap;
+      overflow: hidden;
+      animation: typing 3s steps(30, end), blink-caret .75s step-end infinite;
+    }
+    .typewriter-subtext {
+      font-size: 18px;
+      font-family: Arial, sans-serif;
+      margin-top: 15px;
+      opacity: 0;
+      animation: fadeIn 2s ease forwards;
+      animation-delay: 3s;
+    }
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+    @keyframes blink-caret {
+      from, to { border-color: transparent }
+      50% { border-color: white; }
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
   </style>
 </head>
 <body>
   <div class="video-container" id="videoContainer">
-    <video autoplay muted playsinline id="introVideo">
+    <div class="overlay-message" id="overlayMessage">
+      <div class="typewriter-text">Welcome</div>
+      <div class="typewriter-subtext">Tap anywhere to play</div>
+    </div>
+    <video playsinline id="introVideo">
       <source src="wedding-intro.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
-    <div class="scroll-message" id="scrollMessage">scroll to enter our wedding website</div>
+    <div class="scroll-message">scroll to enter our wedding website</div>
     <button class="enter-button" id="enterButton">Enter Our Wedding Website</button>
   </div>
 
@@ -95,23 +135,29 @@
 
   <script>
     const video = document.getElementById('introVideo');
-    const scrollMessage = document.getElementById('scrollMessage');
     const enterButton = document.getElementById('enterButton');
     const iframeContainer = document.getElementById('iframeContainer');
     const videoContainer = document.getElementById('videoContainer');
+    const overlayMessage = document.getElementById('overlayMessage');
 
+    // User must click to start video with sound
     document.addEventListener('click', () => {
-      if (video.muted) {
+      if (video.paused) {
         video.muted = false;
+        video.style.display = 'block';
         video.play();
+        overlayMessage.style.display = 'none';
       }
     });
 
+    // Show the button at the end
     video.addEventListener('ended', () => {
+      video.style.display = 'none';
+      videoContainer.style.backgroundColor = 'black';
       enterButton.classList.add('show');
-      scrollMessage.classList.add('show');
     });
 
+    // Enter website
     enterButton.addEventListener('click', () => {
       videoContainer.style.display = 'none';
       iframeContainer.style.display = 'block';
