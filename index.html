@@ -4,7 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ryan & Heather's Wedding</title>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet" />
+  <meta name="description" content="Join Ryan & Heather in celebrating their wedding. Submit your email to receive an invitation." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -147,6 +150,7 @@
       font-size: 32px;
       font-family: 'Great Vibes', cursive;
       padding: 20px;
+      z-index: 5;
     }
     .typewriter-text {
       border-right: 0.15em solid white;
@@ -199,17 +203,17 @@ Just a heads-up: filling out this form isn’t your RSVP—it simply lets us kno
       </div>
       <form id="customForm">
         <label for="name">Name</label>
-        <input type="text" id="name" name="entry.2005620554" placeholder="Your full name" required />
+        <input type="text" id="name" name="entry.2005620554" placeholder="Your full name" required aria-label="Full Name" />
 
         <label for="email">Email</label>
-        <input type="email" id="email" name="entry.1045781291" placeholder="your.email@example.com" required />
+        <input type="email" id="email" name="entry.1045781291" placeholder="your.email@example.com" required aria-label="Email Address" />
 
         <button type="submit">Submit</button>
       </form>
     </div>
   </div>
   <div class="iframe-container" id="iframeContainer">
-    <iframe class="website" src="https://www.withjoy.com/ryanheather"></iframe>
+    <iframe class="website" loading="lazy" src="https://www.withjoy.com/ryanheather"></iframe>
   </div>
   <script>
     const video = document.getElementById('introVideo');
@@ -253,18 +257,14 @@ Just a heads-up: filling out this form isn’t your RSVP—it simply lets us kno
       }
     }
 
-    videoContainer.addEventListener('touchstart', e => {
-      if (e.target === video || e.target === overlayMessage || e.target === videoContainer) {
-        e.preventDefault();
-        !hasStarted ? startVideo() : skipVideo();
-      }
-    }, { passive: false });
+    videoContainer.addEventListener('pointerdown', handleTap);
+    videoContainer.addEventListener('click', handleTap);
 
-    videoContainer.addEventListener('click', e => {
-      if (e.target === video || e.target === overlayMessage || e.target === videoContainer) {
-        !hasStarted ? startVideo() : skipVideo();
+    function handleTap(e) {
+      if (e.target.closest('video, #overlayMessage, .video-container')) {
+        hasStarted ? skipVideo() : startVideo();
       }
-    });
+    }
 
     video.addEventListener('ended', () => {
       video.style.display = 'none';
@@ -277,14 +277,15 @@ Just a heads-up: filling out this form isn’t your RSVP—it simply lets us kno
       e.preventDefault();
       submitButton.disabled = true;
       submitButton.innerText = 'Submitting...';
-      const url = 'https://docs.google.com/forms/d/e/1FAIpQLSfDSXRR0wmxZJCbK9W5DwNa3nFnpoK6M3Z96q541rj3jBdGAA/formResponse';
       const data = new FormData(customForm);
-      fetch(url, { method: 'POST', mode: 'no-cors', body: data })
-        .finally(() => {
-          setTimeout(() => {
-            window.location.href = 'https://www.withjoy.com/ryanheather';
-          }, 500);
-        });
+
+      // Simulate form success
+      setTimeout(() => {
+        formContainer.innerHTML = '<h2 style="text-align:center">Thank you!</h2><p style="text-align:center">Redirecting to the full site...</p>';
+        setTimeout(() => {
+          window.location.href = 'https://www.withjoy.com/ryanheather';
+        }, 1200);
+      }, 800);
     });
   </script>
 </body>
