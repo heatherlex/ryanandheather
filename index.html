@@ -186,60 +186,57 @@
     <iframe class="website" loading="lazy" src="https://www.withjoy.com/ryanheather"></iframe>
   </div>
 
-  <script>
-    const video = document.getElementById('introVideo');
-    const overlayMessage = document.getElementById('overlayMessage');
-    const videoContainer = document.getElementById('videoContainer');
-    const formContainer = document.getElementById('formContainer');
-    const topSkipMessage = document.getElementById('topSkipMessage');
-    const customForm = document.getElementById('customForm');
-    const submitButton = customForm.querySelector('button[type="submit"]');
+<script>
+const video = document.getElementById('introVideo');
+const overlayMessage = document.getElementById('overlayMessage');
+const videoContainer = document.getElementById('videoContainer');
+const formContainer = document.getElementById('formContainer');
+const topSkipMessage = document.getElementById('topSkipMessage');
 
-    let hasStarted = false;
-    let canSkip = false;
+let hasStarted = false;
+let canSkip = false;
 
-    function startVideo() {
-      if (!hasStarted) {
-        hasStarted = true;
-        video.style.display = 'block';
-        overlayMessage.style.display = 'none';
-        topSkipMessage.style.display = 'block';
+function startVideo() {
+  if (!hasStarted) {
+    hasStarted = true;
+    video.style.display = 'block';
+    overlayMessage.style.display = 'none';
+    topSkipMessage.style.display = 'block';
 
-        video.muted = false;
-        video.play().then(() => {
-          canSkip = true;
-        }).catch(err => {
-          console.error('Playback failed:', err);
-          overlayMessage.innerText = 'Tap to try again';
-          hasStarted = false;
-        });
-      }
-    }
+    video.muted = true; 
+    video.play().catch(err => console.error(err));
+  }
+}
 
-    function skipVideo() {
-      if (canSkip) {
-        video.pause();
-        video.style.display = 'none';
-        formContainer.style.display = 'flex';
-        topSkipMessage.style.display = 'none';
-        document.body.style.overflow = 'auto';
-      }
-    }
+function enableSkip() {
+  video.muted = false;
+  canSkip = true;
+}
 
-    function handleTap() {
-      if (!hasStarted) {
-        startVideo();
-      } else if (canSkip) {
-        skipVideo();
-      }
-    }
+function skipVideo() {
+  if (canSkip) {
+    video.pause();
+    video.style.display = 'none';
+    topSkipMessage.style.display = 'none';
+    formContainer.style.display = 'flex';
+    document.body.style.overflow = 'auto';
+  }
+}
 
-    videoContainer.addEventListener('pointerdown', handleTap);
-    videoContainer.addEventListener('click', handleTap);
+video.addEventListener('playing', () => {
+  if (hasStarted && video.muted) {
+    enableSkip();
+  }
+});
 
-    video.addEventListener('ended', () => {
-      skipVideo();
-    });
+video.addEventListener('ended', skipVideo);
+
+videoContainer.addEventListener('click', () => {
+  if (!hasStarted) startVideo();
+  else if (canSkip) skipVideo();
+});
+</script>
+
 
     customForm.addEventListener('submit', e => {
       e.preventDefault();
