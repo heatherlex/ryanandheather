@@ -133,36 +133,45 @@
     <iframe src="https://www.withjoy.com/ryanheather"></iframe>
   </div>
 
-  <script>
-    const video = document.getElementById('introVideo');
-    const enterButton = document.getElementById('enterButton');
-    const iframeContainer = document.getElementById('iframeContainer');
-    const videoContainer = document.getElementById('videoContainer');
-    const overlayMessage = document.getElementById('overlayMessage');
+<script>
+  const video = document.getElementById('introVideo');
+  const enterButton = document.getElementById('enterButton');
+  const iframeContainer = document.getElementById('iframeContainer');
+  const videoContainer = document.getElementById('videoContainer');
+  const overlayMessage = document.getElementById('overlayMessage');
 
-    // User must click to start video with sound
-    document.addEventListener('click', () => {
-      if (video.paused) {
+  let hasStarted = false;
+
+  document.addEventListener('click', () => {
+    if (!hasStarted) {
+      hasStarted = true;
+
+      // Reset and try to play muted first
+      video.style.display = 'block';
+      video.muted = true;
+      video.load();
+      video.play().then(() => {
+        // After playback starts, unmute
         video.muted = false;
-        video.style.display = 'block';
-        video.play();
         overlayMessage.style.display = 'none';
-      }
-    });
+      }).catch((err) => {
+        console.error('Video playback failed:', err);
+        overlayMessage.innerText = 'Click to try again';
+      });
+    }
+  });
 
-    // Show the button at the end
-    video.addEventListener('ended', () => {
-      video.style.display = 'none';
-      videoContainer.style.backgroundColor = 'black';
-      enterButton.classList.add('show');
-    });
+  video.addEventListener('ended', () => {
+    video.style.display = 'none';
+    videoContainer.style.backgroundColor = 'black';
+    enterButton.classList.add('show');
+  });
 
-    // Enter website
-    enterButton.addEventListener('click', () => {
-      videoContainer.style.display = 'none';
-      iframeContainer.style.display = 'block';
-      document.body.style.overflow = 'auto';
-    });
-  </script>
+  enterButton.addEventListener('click', () => {
+    videoContainer.style.display = 'none';
+    iframeContainer.style.display = 'block';
+    document.body.style.overflow = 'auto';
+  });
+</script>
 </body>
 </html>
