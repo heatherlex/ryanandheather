@@ -19,14 +19,14 @@
       height: 100%;
       font-family: Arial, sans-serif;
       background-color: black;
-      overflow: hidden;
+      overflow: hidden; /* initially prevent scroll */
       color: white;
     }
     .video-container {
       position: relative;
       min-height: 100vh;
       width: 100vw;
-      overflow-y: auto;
+      overflow-y: auto; /* allow scroll inside */
       z-index: 2;
       display: flex;
       align-items: center;
@@ -62,11 +62,13 @@
     .form-container {
       display: none;
       flex-direction: column;
-      align-items: flex-start; /* align left so label+inputs line up nicely */
+      align-items: flex-start;
       justify-content: flex-start;
       margin-top: 20px;
       width: 90%;
       max-width: 600px;
+      max-height: 75vh; /* limit height */
+      overflow-y: auto; /* scroll if needed */
       z-index: 5;
       font-family: 'Cormorant Garamond', serif;
       padding: 20px;
@@ -74,6 +76,7 @@
       border-radius: 12px;
       pointer-events: auto;
       color: #eee;
+      -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
     }
     .form-description {
       font-size: 18px;
@@ -118,9 +121,13 @@
       pointer-events: auto;
       align-self: center;
     }
-    button[type='submit']:hover {
+    button[type='submit']:hover:not(:disabled) {
       background-color: white;
       color: black;
+    }
+    button[type='submit']:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
     .iframe-container {
       height: 100vh;
@@ -254,6 +261,7 @@
     const formContainer = document.getElementById('formContainer');
     const topSkipMessage = document.getElementById('topSkipMessage');
     const customForm = document.getElementById('customForm');
+    const submitButton = customForm.querySelector('button[type="submit"]');
 
     let hasStarted = false;
 
@@ -284,6 +292,7 @@
         overlayMessage.style.display = 'none';
         formContainer.style.display = 'flex';
         topSkipMessage.style.display = 'none';
+        document.body.style.overflow = 'auto'; // allow page scroll after video ends
       }
     }
 
@@ -304,10 +313,14 @@
       videoContainer.style.backgroundColor = 'black';
       formContainer.style.display = 'flex';
       topSkipMessage.style.display = 'none';
+      document.body.style.overflow = 'auto'; // allow scrolling after video ends
     });
 
     customForm.addEventListener('submit', (e) => {
       e.preventDefault();
+
+      // Disable the submit button to prevent multiple submissions
+      submitButton.disabled = true;
 
       const googleFormURL =
         'https://docs.google.com/forms/d/e/1FAIpQLSfDSXRR0wmxZJCbK9W5DwNa3nFnpoK6M3Z96q541rj3jBdGAA/formResponse';
@@ -317,9 +330,16 @@
         method: 'POST',
         mode: 'no-cors',
         body: formData,
-      }).finally(() => {
-        window.location.href = 'https://www.withjoy.com/ryanheather';
-      });
+      })
+        .catch(() => {
+          // ignore fetch errors due to no-cors
+        })
+        .finally(() => {
+          // Small delay to let the button visually register the press
+          setTimeout(() => {
+            window.location.href = 'https://www.withjoy.com/ryanheather';
+          }, 800);
+        });
     });
   </script>
 </body>
