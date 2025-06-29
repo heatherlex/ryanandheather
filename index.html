@@ -42,9 +42,8 @@
       border-radius: 8px;
       background: black;
       z-index: 2;
-      pointer-events: none; /* disable video interaction */
+      pointer-events: none;
     }
-    /* New top skip message */
     #topSkipMessage {
       position: fixed;
       top: 0;
@@ -63,8 +62,8 @@
     .form-container {
       display: none;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      align-items: flex-start; /* align left so label+inputs line up nicely */
+      justify-content: flex-start;
       margin-top: 20px;
       width: 90%;
       max-width: 600px;
@@ -73,15 +72,17 @@
       padding: 20px;
       background: rgba(255 255 255 / 0.05);
       border-radius: 12px;
-      pointer-events: auto; /* enable interactions */
+      pointer-events: auto;
+      color: #eee;
     }
     .form-description {
       font-size: 18px;
-      margin-bottom: 20px;
-      text-align: left;
-      line-height: 1.5;
-      color: #eee;
+      margin-bottom: 30px;
       white-space: pre-wrap;
+      line-height: 1.5;
+    }
+    .form-description strong {
+      color: white;
     }
     label {
       display: block;
@@ -98,7 +99,7 @@
       color: white;
       font-size: 18px;
       font-family: 'Cormorant Garamond', serif;
-      pointer-events: auto; /* enable inputs */
+      pointer-events: auto;
     }
     input::placeholder {
       color: #ccc;
@@ -114,7 +115,8 @@
       border-radius: 8px;
       transition: background-color 0.3s, color 0.3s;
       user-select: none;
-      pointer-events: auto; /* enable button */
+      pointer-events: auto;
+      align-self: center;
     }
     button[type='submit']:hover {
       background-color: white;
@@ -148,7 +150,7 @@
       font-size: 32px;
       font-family: 'Great Vibes', cursive;
       padding: 20px;
-      pointer-events: none; /* allow clicks to pass through */
+      pointer-events: none;
     }
     .typewriter-text {
       border-right: 0.15em solid white;
@@ -205,16 +207,14 @@
 
     <div class="form-container" id="formContainer" role="form" aria-label="Wedding RSVP form">
       <div class="form-description">
-Please complete this form and tap submit before proceeding to the wedding website :)
+        <strong>We’ll be sending out our invitations electronically!</strong>
 
-We’ll be sending out our invitations electronically!
+        To make sure you don’t miss a thing, we kindly ask that one person per invitation share their email with us. This way, when the time comes, we can send your personalized RSVP link and all the important wedding details directly to you..
 
-To make sure you don’t miss a thing, we kindly ask that one person per invitation share their email with us. This way, when the time comes, we can send your personalized RSVP link and all the important wedding details directly to you when the time comes.
+        Just a heads-up: filling out this form isn’t your RSVP—it simply lets us know where to send your official invite closer to the date.
 
-Just a heads-up: filling out this form isn’t your RSVP—it simply lets us know where to send your official invite closer to the date.
-
-With love,
-Ryan & Heather
+        <strong>With love,</strong><br/>
+        <strong>Ryan & Heather</strong>
       </div>
       <form id="customForm">
         <label for="name">Name</label>
@@ -262,7 +262,7 @@ Ryan & Heather
         hasStarted = true;
         video.style.display = 'block';
         topSkipMessage.style.display = 'block';
-        video.muted = true; // mute first for autoplay on mobile
+        video.muted = true;
         video.load();
         video
           .play()
@@ -287,7 +287,6 @@ Ryan & Heather
       }
     }
 
-    // Start or skip video on tap/click/touchstart
     function onStart(e) {
       e.preventDefault();
       if (!hasStarted) {
@@ -300,7 +299,6 @@ Ryan & Heather
     document.addEventListener('touchstart', onStart, { passive: false });
     document.addEventListener('click', onStart, { passive: false });
 
-    // When video ends show form and hide top skip message
     video.addEventListener('ended', () => {
       video.style.display = 'none';
       videoContainer.style.backgroundColor = 'black';
@@ -308,7 +306,6 @@ Ryan & Heather
       topSkipMessage.style.display = 'none';
     });
 
-    // Submit form data to Google Forms and redirect on success
     customForm.addEventListener('submit', (e) => {
       e.preventDefault();
 
