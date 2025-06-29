@@ -30,8 +30,8 @@
       padding: 20px 0;
     }
     video {
-      max-width: 95vw;
-      max-height: 70vh;
+      max-width: 90vw;
+      max-height: 60vh;
       object-fit: contain;
       display: none;
       border-radius: 8px;
@@ -48,7 +48,6 @@
       z-index: 4;
     }
     .enter-button {
-      margin-top: 20px;
       background-color: transparent;
       color: white;
       border: 2px solid white;
@@ -71,13 +70,6 @@
       margin-top: 20px;
       width: 100%;
       z-index: 3;
-    }
-    .form-container iframe {
-      width: 90%;
-      height: 600px;
-      border: none;
-      border-radius: 8px;
-      max-width: 700px;
     }
     .iframe-container {
       height: 100vh;
@@ -118,86 +110,3 @@
     .typewriter-subtext {
       font-size: 18px;
       font-family: 'Cormorant Garamond', serif;
-      margin-top: 15px;
-      opacity: 0;
-      animation: fadeIn 2s ease forwards;
-      animation-delay: 2.3s;
-      text-transform: lowercase;
-    }
-    @keyframes typing {
-      from { width: 0 }
-      to { width: 8ch }
-    }
-    @keyframes blink-caret {
-      from, to { border-color: transparent }
-      50% { border-color: white; }
-    }
-    @keyframes fadeIn {
-      to { opacity: 1; }
-    }
-  </style>
-</head>
-<body>
-  <div class="video-container" id="videoContainer">
-    <div class="overlay-message" id="overlayMessage">
-      <div class="typewriter-text">Welcome </div>
-      <div class="typewriter-subtext">tap anywhere to play</div>
-    </div>
-    <video playsinline id="introVideo">
-      <source src="wedding-intro.mp4" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-    <div class="scroll-message">scroll to skip video</div>
-    <div class="form-container" id="formContainer">
-      <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfDSXRR0wmxZJCbK9W5DwNa3nFnpoK6M3Z96q541rj3jBdGAA/viewform?embedded=true">Loading…</iframe>
-      <div style="margin-top: 20px; text-align: center;">
-        <button class="enter-button" id="enterButton">Enter Our Wedding Website</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="iframe-container" id="iframeContainer">
-    <iframe class="website" src="https://www.withjoy.com/ryanheather"></iframe>
-  </div>
-
-  <script>
-    const video = document.getElementById('introVideo');
-    const enterButton = document.getElementById('enterButton');
-    const iframeContainer = document.getElementById('iframeContainer');
-    const videoContainer = document.getElementById('videoContainer');
-    const overlayMessage = document.getElementById('overlayMessage');
-    const formContainer = document.getElementById('formContainer');
-
-    let hasStarted = false;
-
-    document.addEventListener('click', () => {
-      if (!hasStarted) {
-        hasStarted = true;
-        video.style.display = 'block';
-        video.muted = true;
-        video.load();
-        video.play().then(() => {
-          video.muted = false;
-          overlayMessage.style.display = 'none';
-        }).catch(err => {
-          console.error('Playback error:', err);
-          overlayMessage.innerText = 'Click to try again';
-        });
-      }
-    });
-
-    video.addEventListener('ended', () => {
-      video.style.display = 'none';
-      videoContainer.style.backgroundColor = 'black';
-      enterButton.classList.add('show');
-      formContainer.style.display = 'flex';
-    });
-
-    enterButton.addEventListener('click', () => {
-      videoContainer.style.display = 'none';
-      iframeContainer.style.display = 'block';
-      document.body.style.overflow = 'auto';
-    });
-  </script>
-</body>
-</html>
