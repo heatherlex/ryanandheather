@@ -161,7 +161,6 @@
 </head>
 <body>
   <div id="topSkipMessage">tap to skip video</div>
-
   <div class="video-container" id="videoContainer">
     <div class="overlay-message" id="overlayMessage">
       <div class="typewriter-text">Welcome</div>
@@ -201,6 +200,33 @@
     const topSkipMessage = document.getElementById('topSkipMessage');
     const customForm = document.getElementById('customForm');
     const submitButton = customForm.querySelector('button');
+
+    const redirectOverlay = document.createElement('div');
+    redirectOverlay.style.cssText = `
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-color: black;
+      color: white;
+      font-family: 'Great Vibes', cursive;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2rem;
+      z-index: 100;
+      flex-direction: column;
+    `;
+    redirectOverlay.innerHTML = `
+      <div style="
+        overflow: hidden;
+        white-space: nowrap;
+        border-right: 0.15em solid white;
+        animation: typing 4s steps(40, end), blink-caret 0.75s step-end infinite;
+      ">
+        redirecting you to our wedding website
+      </div>
+    `;
+    document.body.appendChild(redirectOverlay);
+    redirectOverlay.style.display = 'none';
 
     let hasStarted = false;
     let canSkip = false;
@@ -246,15 +272,19 @@
       const email = document.getElementById('email').value.trim();
 
       const params = new URLSearchParams({ name, email });
+
       fetch('https://script.google.com/macros/s/AKfycbxERr8Vw4sHPZ6XIrpJhqG_o0S_22JbSNKrjVjgDK2X_UoxE7r9oT3nBAGlUN3HXOdn/exec', {
         method: 'POST',
         body: params
-      }).then(r => r.json()).then(() => {
-        submitButton.innerText = 'Thank you!';
+      })
+      .then(() => {
+        formContainer.style.display = 'none';
+        redirectOverlay.style.display = 'flex';
         setTimeout(() => {
           window.location.href = 'https://www.withjoy.com/ryanheather';
-        }, 1500);
-      }).catch(err => {
+        }, 5000);
+      })
+      .catch(err => {
         console.error('Submission failed', err);
         submitButton.disabled = false;
         submitButton.innerText = 'Try Again';
