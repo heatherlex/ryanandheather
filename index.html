@@ -2,9 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ryan & Heather's Wedding</title>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
   <style>
     * {
       margin: 0;
@@ -38,18 +41,24 @@
       display: none;
       border-radius: 8px;
       background: black;
+      z-index: 2;
+      pointer-events: none; /* disable video interaction */
     }
-    .scroll-message {
-      position: absolute;
-      bottom: 20px;
+    /* New top skip message */
+    #topSkipMessage {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
       text-align: center;
+      padding: 12px 0;
+      background: rgba(0, 0, 0, 0.7);
       color: white;
       font-size: 14px;
-      background-color: rgba(0, 0, 0, 0.6);
-      padding: 8px;
-      z-index: 4;
+      font-family: 'Cormorant Garamond', serif;
+      z-index: 10;
       user-select: none;
+      display: none;
     }
     .form-container {
       display: none;
@@ -59,18 +68,20 @@
       margin-top: 20px;
       width: 90%;
       max-width: 600px;
-      z-index: 3;
+      z-index: 5;
       font-family: 'Cormorant Garamond', serif;
       padding: 20px;
       background: rgba(255 255 255 / 0.05);
       border-radius: 12px;
+      pointer-events: auto; /* enable interactions */
     }
     .form-description {
       font-size: 18px;
       margin-bottom: 20px;
-      text-align: center;
-      line-height: 1.4;
+      text-align: left;
+      line-height: 1.5;
       color: #eee;
+      white-space: pre-wrap;
     }
     label {
       display: block;
@@ -87,6 +98,7 @@
       color: white;
       font-size: 18px;
       font-family: 'Cormorant Garamond', serif;
+      pointer-events: auto; /* enable inputs */
     }
     input::placeholder {
       color: #ccc;
@@ -102,6 +114,7 @@
       border-radius: 8px;
       transition: background-color 0.3s, color 0.3s;
       user-select: none;
+      pointer-events: auto; /* enable button */
     }
     button[type='submit']:hover {
       background-color: white;
@@ -135,6 +148,7 @@
       font-size: 32px;
       font-family: 'Great Vibes', cursive;
       padding: 20px;
+      pointer-events: none; /* allow clicks to pass through */
     }
     .typewriter-text {
       border-right: 0.15em solid white;
@@ -177,27 +191,51 @@
   </style>
 </head>
 <body>
+  <div id="topSkipMessage">tap to skip video</div>
+
   <div class="video-container" id="videoContainer">
     <div class="overlay-message" id="overlayMessage">
       <div class="typewriter-text">Welcome </div>
       <div class="typewriter-subtext">tap anywhere to play</div>
     </div>
-    <video playsinline muted id="introVideo" preload="auto" playsinline>
+    <video playsinline muted id="introVideo" preload="auto">
       <source src="wedding-intro.mp4" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
-    <div class="scroll-message" id="scrollMessage">tap to skip video</div>
 
     <div class="form-container" id="formContainer" role="form" aria-label="Wedding RSVP form">
-      <p class="form-description">
-        Please fill out this quick form so we know you’re coming! We can’t wait to celebrate together. 🥂
-      </p>
+      <div class="form-description">
+Please complete this form and tap submit before proceeding to the wedding website :)
+
+We’ll be sending out our invitations electronically!
+
+To make sure you don’t miss a thing, we kindly ask that one person per invitation share their email with us. This way, when the time comes, we can send your personalized RSVP link and all the important wedding details directly to you when the time comes.
+
+Just a heads-up: filling out this form isn’t your RSVP—it simply lets us know where to send your official invite closer to the date.
+
+With love,
+Ryan & Heather
+      </div>
       <form id="customForm">
         <label for="name">Name</label>
-        <input type="text" id="name" name="entry.2005620554" placeholder="Your full name" required autocomplete="name" />
+        <input
+          type="text"
+          id="name"
+          name="entry.2005620554"
+          placeholder="Your full name"
+          required
+          autocomplete="name"
+        />
 
         <label for="email">Email</label>
-        <input type="email" id="email" name="entry.1045781291" placeholder="your.email@example.com" required autocomplete="email" />
+        <input
+          type="email"
+          id="email"
+          name="entry.1045781291"
+          placeholder="your.email@example.com"
+          required
+          autocomplete="email"
+        />
 
         <button type="submit" aria-label="Submit RSVP form">Submit</button>
       </form>
@@ -214,7 +252,7 @@
     const videoContainer = document.getElementById('videoContainer');
     const overlayMessage = document.getElementById('overlayMessage');
     const formContainer = document.getElementById('formContainer');
-    const scrollMessage = document.getElementById('scrollMessage');
+    const topSkipMessage = document.getElementById('topSkipMessage');
     const customForm = document.getElementById('customForm');
 
     let hasStarted = false;
@@ -223,15 +261,19 @@
       if (!hasStarted) {
         hasStarted = true;
         video.style.display = 'block';
+        topSkipMessage.style.display = 'block';
         video.muted = true; // mute first for autoplay on mobile
         video.load();
-        video.play().then(() => {
-          video.muted = false;
-          overlayMessage.style.display = 'none';
-        }).catch(err => {
-          console.error('Playback error:', err);
-          overlayMessage.innerText = 'Tap to try again';
-        });
+        video
+          .play()
+          .then(() => {
+            video.muted = false;
+            overlayMessage.style.display = 'none';
+          })
+          .catch((err) => {
+            console.error('Playback error:', err);
+            overlayMessage.innerText = 'Tap to try again';
+          });
       }
     }
 
@@ -241,7 +283,7 @@
         video.style.display = 'none';
         overlayMessage.style.display = 'none';
         formContainer.style.display = 'flex';
-        scrollMessage.style.display = 'none';
+        topSkipMessage.style.display = 'none';
       }
     }
 
@@ -258,25 +300,26 @@
     document.addEventListener('touchstart', onStart, { passive: false });
     document.addEventListener('click', onStart, { passive: false });
 
-    // When video ends show form and hide scroll message
+    // When video ends show form and hide top skip message
     video.addEventListener('ended', () => {
       video.style.display = 'none';
       videoContainer.style.backgroundColor = 'black';
       formContainer.style.display = 'flex';
-      scrollMessage.style.display = 'none';
+      topSkipMessage.style.display = 'none';
     });
 
     // Submit form data to Google Forms and redirect on success
-    customForm.addEventListener('submit', e => {
+    customForm.addEventListener('submit', (e) => {
       e.preventDefault();
 
-      const googleFormURL = 'https://docs.google.com/forms/d/e/1FAIpQLSfDSXRR0wmxZJCbK9W5DwNa3nFnpoK6M3Z96q541rj3jBdGAA/formResponse';
+      const googleFormURL =
+        'https://docs.google.com/forms/d/e/1FAIpQLSfDSXRR0wmxZJCbK9W5DwNa3nFnpoK6M3Z96q541rj3jBdGAA/formResponse';
       const formData = new FormData(customForm);
 
       fetch(googleFormURL, {
         method: 'POST',
         mode: 'no-cors',
-        body: formData
+        body: formData,
       }).finally(() => {
         window.location.href = 'https://www.withjoy.com/ryanheather';
       });
